@@ -1,9 +1,21 @@
 /* eslint-disable arrow-body-style */
 import morgan from 'morgan';
-import { createLogger, transports, format } from 'winston';
+import { createLogger, transports, format, addColors } from 'winston';
 import 'winston-daily-rotate-file';
 
-const { combine, timestamp, label, prettyPrint } = format;
+const { combine, timestamp, label, prettyPrint, colorize } = format;
+// define different colour for each log level
+const colors = {
+  http: 'white',
+  info: 'green',
+  warn: 'yellow',
+  debug: 'blue',
+  error: 'red',
+};
+
+// Add colors to the logger format
+addColors(colors);
+
 const fileRotateTransport = new transports.DailyRotateFile({
   filename: 'logs/combined-%DATE%.log',
   datePattern: 'YYYY-MM-DD-HH',
@@ -12,10 +24,14 @@ const fileRotateTransport = new transports.DailyRotateFile({
   maxFiles: '14d',
 });
 
-// eslint-disable-next-line import/prefer-default-export
 export const systLogs = createLogger({
   level: 'http',
-  format: combine(timestamp({ format: 'YYYY-MM-DD-HH-mm-ss.SSS A' }), label({ label: 'system' }), prettyPrint()),
+  format: combine(
+    timestamp({ format: 'YYYY-MM-DD-HH-mm-ss.SSS A' }),
+    label({ label: 'system' }),
+    colorize({ all: true }),
+    prettyPrint()
+  ),
   transports: [
     fileRotateTransport,
     new transports.File({
@@ -63,3 +79,7 @@ export const morganMiddleware = morgan(
     },
   }
 );
+// To log in console if not runing in the production environment
+if (process.env.NODE_ENV !== 'PRODUCTION') {
+  systLogs.add(new transports.Console({ format: format.simple() }));
+}
