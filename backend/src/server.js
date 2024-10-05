@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morganMiddleware);
 
 app.get('/api/v1/test', (req, res) => {
-  res.json({ message: { text: `API endpoint for testing` } });
+  res.json({ message: `API endpoint for testing` });
 });
 
 const hostname = process.env.HOST_NAME || 'localhost';
