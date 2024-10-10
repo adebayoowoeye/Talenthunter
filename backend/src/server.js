@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import 'dotenv/config';
 // eslint-disable-next-line import/extensions
 import { systLogs, morganMiddleware } from '../utils/Logger.js';
+// eslint-disable-next-line import/extensions
+import connectDb from './config/db.js';
 
 // Create an Express app
 
@@ -14,6 +16,10 @@ const app = express();
 if (process.env.NODE_ENV === 'DEVELOPMENT') {
   app.use(morgan('dev'));
 }
+
+// Connect to MongoDB
+connectDb();
+
 // Middleware
 
 app.use(express.json());
