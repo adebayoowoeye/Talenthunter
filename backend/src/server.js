@@ -1,12 +1,12 @@
+/* eslint-disable import/extensions */
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import chalk from 'chalk';
 import morgan from 'morgan';
 import 'dotenv/config';
-// eslint-disable-next-line import/extensions
 import { systLogs, morganMiddleware } from '../utils/Logger.js';
-// eslint-disable-next-line import/extensions
 import connectDb from './config/db.js';
+import productRoutes from './routes/api/product.js';
 
 // Create an Express app
 
@@ -26,6 +26,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(morganMiddleware);
+
+// API routes middleware
+app.use('/api/v1/', productRoutes);
 
 app.get('/api/v1/test', (req, res) => {
   res.json({ message: `API endpoint for testing` });
