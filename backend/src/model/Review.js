@@ -24,7 +24,7 @@ const reviewSchema = new Schema({
   },
   productId: {
     type: ObjectId,
-    ref: 'product',
+    ref: 'Product',
     required: true,
   },
 });
