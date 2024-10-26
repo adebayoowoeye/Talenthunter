@@ -6,6 +6,6 @@ const router = express.Router();
 
 // create new product
 
-router.post('/product/new', newProduct);
+router.post('/admin/product/new', newProduct);
 
 export default router;
