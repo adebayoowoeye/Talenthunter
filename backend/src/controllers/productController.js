@@ -8,6 +8,15 @@ const newProduct = async (req, res, next) => {
 
 const getAllProducts = async (req, res, next) => {
   const products = await Product.find();
-  res.status(200).json({ success: true, data: products });
+  res.status(200).json({ success: true, data: products, count: products.length });
 };
-export { newProduct, getAllProducts };
+// To get single product
+const getSingleProduct = async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+  if (!product) {
+    return res.status(404).json({ success: false, message: 'Product not found' });
+  }
+  return res.status(200).json({ success: true, data: product });
+};
+
+export { newProduct, getAllProducts, getSingleProduct };
