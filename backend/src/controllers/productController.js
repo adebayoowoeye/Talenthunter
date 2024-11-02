@@ -19,4 +19,26 @@ const getSingleProduct = async (req, res, next) => {
   return res.status(200).json({ success: true, data: product });
 };
 
-export { newProduct, getAllProducts, getSingleProduct };
+const updateProduct = async (req, res, next) => {
+  let productToBeUpdated = await Product.findById(req.params.id);
+  if (!productToBeUpdated) {
+    return res.status(404).json({ success: false, message: 'Product not found' });
+  }
+  productToBeUpdated = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  return res.status(200).json({ success: true, data: productToBeUpdated });
+};
+
+const deleteProduct = async (req, res, next) => {
+  const productToDelete = await Product.findById(req.params.id);
+  if (!productToDelete) {
+    return res.status(404).json({ success: false, message: 'Product not found' });
+  }
+  await Product.findByIdAndDelete(productToDelete);
+  return res.status(200).json({ success: true, message: 'Product deleted successfully' });
+};
+
+export { newProduct, getAllProducts, getSingleProduct, updateProduct, deleteProduct };

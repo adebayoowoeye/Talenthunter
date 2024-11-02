@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import chalk from 'chalk';
 import morgan from 'morgan';
 import 'dotenv/config';
-import { systLogs, morganMiddleware } from '../utils/Logger.js';
+import { systLogs, morganMiddleware } from './utils/Logger.js';
 import connectDb from './config/db.js';
 import productRoutes from './routes/api/product.js';
 
