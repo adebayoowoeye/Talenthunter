@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 // eslint-disable-next-line import/extensions
-import { systLogs } from '../utils/Logger.js';
+import systLogs from '../utils/Logger.js';
 
 // Connect to MongoDB
 const connectDb = async () => {

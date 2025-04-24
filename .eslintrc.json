@@ -22,6 +22,7 @@
     "no-process-exit": "off",
     "class-methods-use-this": "off",
     "no-use-before-define": "warn",
-    "no-array-constructor": "error"
+    "no-array-constructor": "error",
+    "import/extensions": "warn"
   }
 }

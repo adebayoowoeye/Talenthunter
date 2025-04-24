@@ -1,85 +1,34 @@
-/* eslint-disable arrow-body-style */
-import morgan from 'morgan';
-import { createLogger, transports, format, addColors } from 'winston';
+import { createLogger, format, transports } from 'winston';
 import 'winston-daily-rotate-file';
+import path from 'path';
 
-const { combine, timestamp, label, prettyPrint, colorize } = format;
-// define different colour for each log level
-const colors = {
-  http: 'white',
-  info: 'green',
-  warn: 'yellow',
-  debug: 'blue',
-  error: 'red',
-};
-
-// Add colors to the logger format
-addColors(colors);
-
-const fileRotateTransport = new transports.DailyRotateFile({
-  filename: 'logs/combined-%DATE%.log',
-  datePattern: 'YYYY-MM-DD-HH',
-  zippedArchive: true,
-  maxSize: '20m',
-  maxFiles: '14d',
-});
-
-export const systLogs = createLogger({
-  level: 'http',
-  format: combine(
-    timestamp({ format: 'YYYY-MM-DD-HH-mm-ss.SSS A' }),
-    label({ label: 'system' }),
-    colorize({ all: true }),
-    prettyPrint()
-  ),
-  transports: [
-    fileRotateTransport,
-    new transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
-    }),
-  ],
-  exceptionHandlers: [
-    new transports.File({
-      filename: 'logs/exceptions.log',
-      level: 'error',
-    }),
-  ],
-  rejectionHandlers: [
-    new transports.File({
-      filename: 'logs/rejections.log',
-      level: 'error',
-    }),
-  ],
-});
-
-export const morganMiddleware = morgan(
-  (req, res, tokens) => {
-    // eslint-disable-next-line no-undef
-    return json.stringify({
-      timestamp: tokens.timestamp(),
-      method: tokens.method(),
-      url: tokens.url(),
-      status: tokens.status(),
-      res_length: tokens['response-length'](),
-      user_agent: req.headers['user-agent'],
-      ip: req.ip,
-      referer: req.headers.referer,
-      host: req.headers.host,
-      body: req.body,
-    });
-  },
-  {
-    stream: {
-      write: (message) => {
-        // Log to system logs
-        const data = JSON.parse(message);
-        systLogs.http(`incomming-request`, data);
-      },
-    },
-  }
+// Define log format
+const logFormat = format.combine(
+  format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  format.printf(({ timestamp, level, message }) => `${timestamp} [${level.toUpperCase()}]: ${message}`)
 );
-// To log in console if not runing in the production environment
-if (process.env.NODE_ENV !== 'PRODUCTION') {
-  systLogs.add(new transports.Console({ format: format.simple() }));
-}
+
+// Create logger instance
+const systLogs = createLogger({
+  level: 'info',
+  format: logFormat,
+  transports: [
+    // Console transport
+    new transports.Console({
+      format: format.combine(format.colorize(), logFormat),
+    }),
+
+    // File transport for general logs
+    new transports.File({ filename: path.join('/app/logs', 'app.log') }),
+
+    // Daily rotating file transport for error logs
+    new transports.DailyRotateFile({
+      filename: path.join('/app/logs', 'error-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD',
+      level: 'error',
+      maxFiles: '14d', // Keep logs for 14 days
+    }),
+  ],
+});
+
+export default systLogs;
