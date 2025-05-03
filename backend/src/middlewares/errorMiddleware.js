@@ -1,4 +1,4 @@
-import ErrorHandler from '../errorHandler.js';
+import ErrorHandler from '../utils/errorHandler.js';
 
 const notFound = (req, res, next) => {
   const error = new Error(`Route Not Found - ${req.originalUrl}`);

@@ -1,3 +1,6 @@
+/* eslint-disable no-underscore-dangle */
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import validator from 'validator';
 
@@ -31,7 +34,6 @@ const userSchema = new Schema(
         'Your password must contain atleast 8 characters,\none uppercase,\none lowercase,\none number\none special character',
       ],
     },
-
     avatar: {
       public_id: { type: String, required: false },
       url: { type: String, required: false },
@@ -61,6 +63,21 @@ const userSchema = new Schema(
     toObject: { virtuals: true },
   }
 );
+
+// function() is used to adhere to ES6 and to be able to use the keyword "this" in line 69
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next();
+  }
+  const salt = await bcrypt.genSalt(10);
+  const hashPassword = await bcrypt.hash(this.password, salt);
+  this.password = hashPassword;
+});
+
+// Get JWT token
+userSchema.methods.getJwtToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_TIME });
+};
 
 const User = model('User', userSchema);
 
