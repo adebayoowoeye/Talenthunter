@@ -7,6 +7,7 @@ import {
   deleteProduct,
   getAllProducts,
 } from '../../controllers/productController.js';
+import requireAuthentication from '../../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ const router = express.Router();
 router.post('/admin/product/new', newProduct);
 
 // Get all products
-router.get('/products', getAllProducts);
+router.get('/products', requireAuthentication, getAllProducts);
 
 // Get single product
 router.get('/product/:id', getSingleProduct);

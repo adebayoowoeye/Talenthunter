@@ -1,7 +1,7 @@
 /* eslint-disable import/extensions */
 import asyncHandler from 'express-async-handler';
 import Product from '../model/Product.js';
-import ErrorHandler from '../errorHandler.js';
+import ErrorHandler from '../utils/errorHandler.js';
 import asyncErrorHandler from '../middlewares/asyncErrorHandler.js';
 
 const newProduct = async (req, res, next) => {

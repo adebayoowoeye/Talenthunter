@@ -47,6 +47,7 @@ app.use(errorMiddleware);
 
 app.get('/api/v1/test', (req, res) => {
   res.json({ message: `API endpoint for testing We just start today 5/4` });
+  // console.log(req)
 });
 
 const hostname = process.env.HOST_NAME || 'localhost';
